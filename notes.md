@@ -9,13 +9,13 @@
 * next round until game over
 
 ## technical details
-### front-end (Wu)
-* bootstrap template for each 'view':
+### front-end (Wu + James)
+* bootstrap layout for each 'view':
   * word round view
   * image round view
   * vote round view
 
-### socket.io event system;
+### socket.io event system (James);
 example **incoming** and *outgoing* events:
   * **newRound**, **roundOver**
     * word, image, or vote round
