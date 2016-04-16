@@ -26,6 +26,7 @@ example **incoming** and *outgoing* events:
 
 ### back-end (James)
 * image DB (pre-seeded)
+  * download a bunch of images
 * socket.io for communication
 * node.js
 
