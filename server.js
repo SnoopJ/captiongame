@@ -48,7 +48,7 @@ io.on('connection', function(socket){
       console.log("Received request from " + socket.id + " to start a game cycle");
       game.startGame(socket.gameid);
     });
-    socket.on('handleVote', function(msg){
+    socket.on('voteSentence', function(msg){
       games[msg.gameid].votes[socket.id] = msg.voteFor;
       //console.log( games[msg.gameid].votes );
     });
