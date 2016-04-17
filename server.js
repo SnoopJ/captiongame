@@ -86,7 +86,7 @@ io.on('connection', function(socket){
 lazyClone = function(obj) {
   return JSON.parse(JSON.stringify(obj));
 }
-var roundtime = 3000;
+var roundtime = 10000;
 var imageDB = [
   "Doge_Image.jpg",
   "rarepepe.png",
@@ -98,14 +98,14 @@ var imageDB = [
 captionGame = function(gameid) {
     return {
       numRounds: 3,
-      roundDuration: [roundtime,roundtime,roundtime],
+      roundDuration: [roundtime/10,roundtime,roundtime],
       currentRound : 0,
       gameid: gameid,
-      image: "/static/"+imageDB[ Math.floor( imageDB.length*Math.random() ) ],
+      image: "/static/"+imageDB[ Math.floor( imageDB.length*Math.random() ) ], // randomly chosen image from our DB
       votes: {},
       sentences: {},
-      //players: io.nsps['/'].adapter.rooms, // list of players in this room
       players: lazyClone(io.nsps['/'].adapter.rooms[gameid].sockets), // list of players in this room
+      votingPool: [],
 
       startGame : function () {
         console.log("Starting game with gameid ",this.gameid);
@@ -114,7 +114,6 @@ captionGame = function(gameid) {
         var self = this;
         self.nextRound();
 
-        //setTimeout(function() { self.nextRound() },self.roundDuration[0]);
       },
       nextRound : function () {
         if (this.currentRound >= this.numRounds) {
@@ -122,10 +121,14 @@ captionGame = function(gameid) {
         } else {
           this.currentRound += 1;
           // console.log("Going to round " + this.currentRound);
+          if(Object.keys(this.sentences).length>0){
+             Object.keys(this.sentences).forEach(function(e,i,a) { this.votingPool[i] = this.sentences[e] },this)
+          }
           io.to(this.gameid).emit('nextRound',{
             roundNumber: this.currentRound,
             expireTime: (new Date()).getTime() + this.roundDuration[this.currentRound-1],
-            image: this.currentRound > 1 ? this.image : ""
+            image: this.currentRound > 1 ? this.image : "",
+            votingPool: this.votingPool
           });
           var self = this;
           setTimeout(function() { self.nextRound() },self.roundDuration[self.currentRound-1]);

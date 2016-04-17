@@ -64,6 +64,12 @@ function startRound(roundInfo) {
   if (roundInfo.image != "") {
     $(".roundImage").attr("src",roundInfo.image);
   }
+  if (roundInfo.votingPool.length > 0) {
+    roundInfo.votingPool.forEach(function(e,i,a){
+      $("#userGeneratedSentences")
+        .append($('<a class="center-block btn btn-primary btn-md" data-votenumber='+ i+1 + ' role="button">' + e + '</a>'));
+    })
+  }
   showRound(roundids[roundNumber-1]);
   now = (new Date()).getTime()
   dt = expireTime>now ? expireTime - now : 0;
@@ -83,10 +89,6 @@ $(function() {
     }
   })
 
-  var generatedSentences = ["First","Second","Third","Fourth","Fifth"]
-  generatedSentences.forEach(function(e,i,a){
-    $("#userGeneratedSentences").append($('<a class="center-block btn btn-primary btn-md" data-votenumber='+ i+1 + ' role="button">' + e + '</a>'));
-  })
 
   var playerWords = ["Fat","Ugly","Bad","Diabetic","Dumb"]
   //var test = ;
