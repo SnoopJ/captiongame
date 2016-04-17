@@ -7,6 +7,7 @@ var port = process.env.PORT || 80;
 var fs = require('fs');
 var freebies = [];
 var games = {};
+var sendPlayersReady;
 
 fs.readFile('freebies.json', 'utf8', function (err, data) {
   if (err) throw err;
@@ -26,32 +27,70 @@ io.on('connection', function(socket){
     // console.log('client connected (id: ' + socket.id +' )');
     socket.on('disconnect', function(){
       // console.log('client disconnected (id: ' + socket.id +' )');
+      gameid = socket.gameid;
+      if ( typeof(gameid) != "undefined" ) { // if this socket has had anything to do with a game, remove them
+        delete(games[gameid].players[socket.id]);
+        delete(games[gameid].playersReady[socket.id]);
+        sendPlayersReady(gameid);
+      }
     });
 
     socket.on('joinGame', function(msg) {
       gameid = msg.gameid;
       console.log("Client " + socket.id + " is joining game with id " + gameid);
-      console.log(games[gameid]);
+      // console.log(games[gameid]);
       socket.join(gameid);
       socket.gameid = gameid;
-      if (typeof(games[gameid] == "undefined")) {
+      // console.log(gameid);
+      if (typeof(games[gameid]) == "undefined") {
         game = new captionGame(gameid);
         games[gameid] = game;
       }
-      console.log( io.nsps['/'].adapter.rooms[msg.gameid] );
+      games[gameid].players[socket.id] = "Enigma"; // Default username until a player readies up
+      console.log(Object.keys(games[gameid].players));
+      sendPlayersReady(gameid);
     });
 
-    // TODO: ready mechanism?
-    socket.on('startGame', function(){
-      console.log("Received request from " + socket.id + " to start a game cycle");
-      game.startGame(socket.gameid);
+    sendPlayersReady = function (gameid) {
+        if ( typeof(games[gameid]) == "undefined" ) {
+          return false;
+        }
+        if ( games[gameid].running == "stale" ) {
+          games[gameid].playersReady = {};
+          games[gameid].running = false;
+        }
+        readyPlayers = Object.keys(games[gameid].playersReady).length;
+        numPlayers = Object.keys(games[gameid].players).length;
+       io.to(gameid).emit("playersReady",{
+        readyPlayers: readyPlayers,
+        numPlayers: numPlayers
+       });
+       if( numPlayers > 1 && readyPlayers == numPlayers ) {
+         games[gameid].startGame(gameid);
+       }
+     }
+    socket.on('playerReady', function(msg) {
+      if (!games[msg.gameid].running) { // if the game isn't already going
+        console.log("Socket " + socket.id + " has playerName " + msg.playerName );
+        // console.log( io.nsps['/'].adapter.rooms[msg.gameid] );
+        games[msg.gameid].players[socket.id] = msg.playerName;
+        games[msg.gameid].playersReady[socket.id] = true;
+        sendPlayersReady(msg.gameid);
+      }
     });
+    // TODO: ready mechanism?
+    // socket.on('startGame', function(){
+    //   console.log("Received request from " + socket.id + " to start a game cycle");
+    //   game.startGame(socket.gameid);
+    // });
     socket.on('voteSentence', function(msg){
       if (typeof(games[msg.gameid]) == "undefined" ) {
         console.error("Unknown game")
       }
-      games[msg.gameid].votes[socket.id] = msg.voteFor;
-      console.log("Votes ", games[msg.gameid].votes );
+
+//      games[msg.gameid].votes[msg.voteFor] = typeof(games[msg.gameid].votes[msg.voteFor]) == "undefined" ? 1 : games[msg.gameid].votes[msg.voteFor] + 1;
+      games[msg.gameid].sentences[msg.voteFor-1].votes += 1;
+      console.log("Vote for ",msg.voteFor, games[msg.gameid].sentences );
     });
     socket.on('sendSentence', function(msg) {
       //console.log("Message from " + socket.id);
@@ -66,19 +105,20 @@ io.on('connection', function(socket){
         "dumb"
       ];
       words = msg.sentence.split(' ').filter(function(s) { return s!=""; });
-      badwords = words.filter(function(s){
-        return freebies.concat(playerWords).indexOf(s.toLowerCase())<0;
-      });
-      if (badwords.length>0 || words.length == badwords.length) {
-        socket.emit('invalidSentence',{
-          sentence: msg.sentence,
-          invalidWords: badwords,
-          empty: (words.length == 0)
-        });
-      } else {
+      // badwords = words.filter(function(s){
+      //   return freebies.concat(playerWords).indexOf(s.toLowerCase())<0;
+      // });
+      // if (badwords.length>0 || words.length == badwords.length) {
+      //   socket.emit('invalidSentence',{
+      //     sentence: msg.sentence,
+      //     invalidWords: badwords,
+      //     empty: (words.length == 0)
+      //   });
+      // }
+      if (words.length>0) {
         socket.emit('sentenceAccepted');
-        games[msg.gameid].sentences[socket.id] = msg.sentence;
-        // console.log("Sentences stored ",games[msg.gameid].sentences);
+        games[msg.gameid].sentences = [].concat(games[msg.gameid].sentences,{sender:socket.id, sentence:msg.sentence, votes:0});
+        console.log("Sentences stored ",games[msg.gameid].sentences);
       }
     });
 });
@@ -90,27 +130,37 @@ var roundtime = 10000;
 var imageDB = [
   "Doge_Image.jpg",
   "rarepepe.png",
-  "xY2xDxo.jpg",
-  "HdkHVRb.jpg",
   "CWlEICI.jpg",
-  "5Hh7Yqz.jpg"
+  "VjFr1P4.jpg",
+  "people-q-c-640-480-2.jpg",
+  "business-q-c-640-480-10.jpg",
+  "mbfl9fC.jpg",
+  "RsNtSyo.jpg",
+  "desktop-hd-funny-dog-pics-with-sayings.jpg",
+  "awg5Ccr.png",
+  "4tQN7x7.jpg"
 ];
 captionGame = function(gameid) {
     return {
+      running: false,
       numRounds: 3,
-      roundDuration: [roundtime/10,roundtime,roundtime],
-      currentRound : 0,
+      roundDuration: [0,roundtime,roundtime],
+      currentRound : 1,
       gameid: gameid,
       image: "/static/"+imageDB[ Math.floor( imageDB.length*Math.random() ) ], // randomly chosen image from our DB
-      votes: {},
-      sentences: {},
-      players: lazyClone(io.nsps['/'].adapter.rooms[gameid].sockets), // list of players in this room
+      votes: [],
+      sentences: [],
+      //players: lazyClone(io.nsps['/'].adapter.rooms[gameid].sockets), // list of players in this room
+      players: {},
+      playersReady: {},
       votingPool: [],
       results: [],
+
 
       startGame : function () {
         console.log("Starting game with gameid ",this.gameid);
         console.log("The player list is ",this.players);
+        this.running=true;
         io.to(this.gameid).emit('gameStart');
         var self = this;
         self.nextRound();
@@ -122,8 +172,8 @@ captionGame = function(gameid) {
         } else {
           this.currentRound += 1;
           // console.log("Going to round " + this.currentRound);
-          if(Object.keys(this.sentences).length>0){
-             Object.keys(this.sentences).forEach(function(e,i,a) { this.votingPool[i] = this.sentences[e] },this)
+          if(this.sentences.length>0){
+            this.sentences.forEach( function(e,i,a) { this.votingPool = this.votingPool.concat(e.sentence); console.log(this.votingPool) }, this );
           }
           io.to(this.gameid).emit('nextRound',{
             roundNumber: this.currentRound,
@@ -141,23 +191,65 @@ captionGame = function(gameid) {
         winner = "Nobody!";
         sentence = "I have no mouth, and I must scream";
         maxvotes = 0;
-        for ( prop in this.votes ) {
-          if ( this.votes.hasOwnProperty(prop) ) {
-            this.results[this.votes[prop]] = typeof(this.results[this.votes[prop]]) != "undefined" ? this.results[this.votes[prop]]+1 : 1;
-            if (this.results[this.votes[prop]] > maxvotes) {
-              maxvotes = this.results[this.votes[prop]];
-              winner = prop;
-              sentence = this.sentences[prop];
-            } else if (this.results[this.votes[prop]] == maxvotes ) {
-              winner = "A tie!"
-              sentence = [].concat(sentence,this.sentences[prop]);
-            }
+        var sorted = this.sentences.sort( function(a,b) {
+          if( a.votes > b.votes ) {
+            return 1;
+          } else if ( a.votes < b.votes ) {
+            return -1;
+          } else {
+            return 0;
+          }
+        })
+        win = sorted.pop();
+        winner = this.players[win.sender];
+        sentence = win.sentence;
+        var popped;
+        while( popped = sorted.pop() ) {
+          if ( win.votes == popped.votes ) {
+            winner = "A tie!";
+            sentence = [].concat(sentence,popped.sentence);
+          } else {
+            break;
           }
         }
+        console.log(win);
 
-        console.log(this.results.sort());
+        // Object.keys(this.sentences).forEach( function(e,i,a) { this.results[i] = 0; }, this);
+        // for ( prop in this.votes ) {
+        //   console.log(prop);
+        //   console.log(this.votes[prop]);
+        //   console.log(this.results[this.votes[prop]]);
+        //   if ( this.votes.hasOwnProperty(prop) ) {
+        //     this.results[this.votes[prop]] += 1;
+        //     if (this.results[this.votes[prop]] > maxvotes) {
+        //       console.log(this.votes[prop] +" has overtaken the previous max");
+        //       maxvotes = this.results[this.votes[prop]];
+        //       winner = this.players[prop];
+        //       sentence = this.sentences[prop];
+        //     } else if (this.results[this.votes[prop]] == maxvotes ) {
+        //       winner = "A tie!"
+        //       sentence = [].concat(sentence,this.sentences[prop]);
+        //     }
+        //   }
+        // }
 
         io.to(this.gameid).emit('gameEnd',{winner: winner, sentence: sentence});
+
+        this.playersReady = {};
+        this.running=false;
+        this.numRounds= 3;
+        this.roundDuration= [roundtime/10,roundtime,roundtime];
+        this.currentRound = 0;
+        this.gameid= gameid;
+        this.image= "/static/"+imageDB[ Math.floor( imageDB.length*Math.random() ) ]; // randomly chosen image from our DB
+        this.votes= {};
+        this.sentences= {};
+        //players: lazyClone(io.nsps['/'].adapter.rooms[gameid].sockets), // list of players in this room
+        this.players= {};
+        this.playersReady= {};
+        this.votingPool= [];
+        this.results= [];
+        sendPlayersReady();
       }
     };
 };

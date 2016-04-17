@@ -26,16 +26,29 @@ socket.on('sentenceAccepted', function() {
   console.log("Sentence was accepted!");
 });
 
+socket.on('playersReady',function(msg){
+  console.log(msg);
+  $('#playersReady').html(msg.readyPlayers + "/" + msg.numPlayers);
+});
+
 socket.on('gameEnd', function(data) {
   if ([].concat(data.sentence).length > 1) {
     winnerText = data.winner + " with the sentences: <br>"+ data.sentence.join('<br>');
   } else {
     winnerText = data.winner + ", with their sentence, <br>"+ data.sentence;
   }
+  $("#userGeneratedSentences").empty();
+  // $("#playerWordBank,#globalWordBank").empty();
   $('#winningSentence').html(winnerText);
   showRound("winner");
-  console.log(data);
   console.log("Game over!")
+  setTimeout(function() {
+    window.location.replace("/play/HackDFW2016");
+    // $(".roundContainer").fadeOut({
+    //   duration:3000,
+    //   complete: function() { $(".roundContainer").hide(); $("#newGameContainer").fadeIn({duration:1500}) }
+    // });
+  },15000);
 });
 
 function doGame() {
@@ -58,8 +71,9 @@ function startTimer(duration) {
   )
 }
 
-var roundids = ["word","image","vote","winner"];
+var roundids = ["","image","vote","winner"];
 function showRound(id) {
+  $("#newGameContainer").hide();
   $(".roundContainer").hide();
   $("#"+id+"RoundContainer").fadeIn({duration: 300});
 }
@@ -99,38 +113,44 @@ $(function() {
   var playerWords = ["Fat","Ugly","Bad","Diabetic","Dumb"]
   //var test = ;
   //Populate the player wordbank
-  playerWords.forEach(function(e){
-    $("#playerWordBank").append($('<a style="width: 50%" class="btn btn-primary btn-lg" role="button">' + e + '</a>'));
-  })
+  // playerWords.forEach(function(e){
+  //   $("#playerWordBank").append($('<a style="width: 50%" class="btn btn-primary btn-lg" role="button">' + e + '</a>'));
+  // })
 
-  var globalWordBank = ["Fat","Ugly","Bad","Diabetic","Dumb","Corpulent","Doge","Red","Blue","Orange","Soggy","Sad","Opulent","Regal","Flacid"]
-  globalWordBank.forEach(function(e){
-    $("#globalWordBank").append($('<a style="width: 50%" class="btn btn-primary btn-lg" role="button">' + e + '</a>'));
-  })
+  // var globalWordBank = ["Fat","Ugly","Bad","Diabetic","Dumb","Corpulent","Doge","Red","Blue","Orange","Soggy","Sad","Opulent","Regal","Flacid"]
+  // globalWordBank.forEach(function(e){
+  //   $("#globalWordBank").append($('<a style="width: 50%" class="btn btn-primary btn-lg" role="button">' + e + '</a>'));
+  // })
 
   // extract button word
-  $('#playerWordBank').on('click', '.btn',function() {
-    input = $("#userSentence");
-    word = $(this).text();
-    if ( input.val().indexOf(word) < 0 ) {
-      // check if there's already a space with ternary
-      hasSpace = input.val().length == 0 || input.val().substr(-1,1) == " ";
-      input.val( input.val() + (hasSpace ? "" : " ") + word + " " );
-    }
-  });
+  // $('#playerWordBank').on('click', '.btn',function() {
+  //   input = $("#userSentence");
+  //   word = $(this).text();
+  //   if ( input.val().indexOf(word) < 0 ) {
+  //     // check if there's already a space with ternary
+  //     hasSpace = input.val().length == 0 || input.val().substr(-1,1) == " ";
+  //     input.val( input.val() + (hasSpace ? "" : " ") + word + " " );
+  //   }
+  // });
 
-  $('#freebieDropdownBody').on('click', '.btn',function() {
-    input = $("#userSentence");
-    word = $(this).text();
-    // check if there's already a space with ternary
-    hasSpace = input.val().length == 0 || input.val().substr(-1,1) == " ";
-    input.val( input.val() + (hasSpace ? "" : " ") + word + " " );
-    $('#myModal').modal('hide');
-  });
+  // $('#freebieDropdownBody').on('click', '.btn',function() {
+  //   input = $("#userSentence");
+  //   word = $(this).text();
+  //   // check if there's already a space with ternary
+  //   hasSpace = input.val().length == 0 || input.val().substr(-1,1) == " ";
+  //   input.val( input.val() + (hasSpace ? "" : " ") + word + " " );
+  //   $('#myModal').modal('hide');
+  // });
 
+  $("#readyButton").on('click',function(){
+    playerName=$('#playerName').val();
+    playerName = typeof(playerName) != "" ? playerName : "Enigma";
+    socket.emit('playerReady',{gameid:gameid, playerName:playerName});
+  });
   $("#submitSentence").on('click',function(){
     input = $("#userSentence");
     socket.emit('sendSentence',{ sentence: input.val(), gameid: gameid });
+    $(this).fadeOut();
   });
 
   $('#userGeneratedSentences').on('click', '.btn',function(){
@@ -141,8 +161,8 @@ $(function() {
      socket.emit('voteSentence',{ sentence: btn.text(), voteFor: btn.data()['votenumber'], gameid: gameid });
   });
 
-  $('#globalWordBank').on('click', '.btn',function(){
-     btn = $(this);
-     socket.emit('draftWord',{ sentence: btn.text(), gameid: gameid });
-  });
+  // $('#globalWordBank').on('click', '.btn',function(){
+  //    btn = $(this);
+  //    socket.emit('draftWord',{ sentence: btn.text(), gameid: gameid });
+  // });
 })
