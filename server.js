@@ -27,18 +27,20 @@ io.on('connection', function(socket){
     })
 });
 
+var roundtime = 10000;
 captionGame = function(sock) {
     return {
       numRounds: 3,
-      roundDuration: [10000,10000,10000],
-      currentRound : 1,
+      roundDuration: [roundtime,roundtime,roundtime],
+      currentRound : 0,
       socket: sock,
 
       startGame : function () {
         console.log("Starting game!");
         this.socket.emit('gameStart');
         var self = this;
-        setTimeout(function() { self.nextRound() },self.roundDuration[0]);
+        self.nextRound();
+        //setTimeout(function() { self.nextRound() },self.roundDuration[0]);
       },
       nextRound : function () {
         if (this.currentRound >= this.numRounds) {
@@ -46,7 +48,10 @@ captionGame = function(sock) {
         } else {
           this.currentRound += 1;
           console.log("Going to round " + this.currentRound);
-          this.socket.emit('nextRound',{n: this.currentRound});
+          this.socket.emit('nextRound',{
+            n: this.currentRound,
+            expiretime: (new Date()).getTime() + this.roundDuration[this.currentRound-1]
+          });
           var self = this;
           setTimeout(function() { self.nextRound() },self.roundDuration[self.currentRound-1]);
         }

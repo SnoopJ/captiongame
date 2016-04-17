@@ -1,69 +1,50 @@
 var socket = io();
 
 socket.on('gameStart', function(data) {
-  // $("<div>Game started!</div>").appendTo("body");
-  startWordRound();
+  console.log("Game started!");
+  $("audio")[0].play();
 });
 
 socket.on('nextRound', function(roundInfo) {
-  // $("<div>Going to next round, which is number " + roundInfo.n +"</div>").appendTo("body");
-  roundNumber = roundInfo.n;
-  if( roundNumber == 2 ) {
-    console.log("Moving to image round...")
-    startImageRound();
-  } else if ( roundNumber == 3 ) {
-    console.log("Moving to vote round...")
-    startVoteRound();
-  }
+  console.log(roundInfo);
+  startRound(roundInfo.n,roundInfo.expiretime);
 });
 
 socket.on('gameEnd', function(data) {
-  // $("<div>Game Over!</div>").appendTo("body");
-  showWordRound();
+  console.log("Game over!")
+  startRound(1,0);
 });
 
 function doGame() {
   socket.emit('startGame');
 }
 
-function startWordRound() {
-    showWordRound();
-    startTimer(10000);
-}
-function startImageRound() {
-    showImageRound();
-    startTimer(10000);
-}
-function startVoteRound() {
-    showVoteRound();
-    startTimer(10000);
-}
-
 function startTimer(duration) {
    $(".timer:visible").width('100%')
-   $(".timer:visible").animate({width: '0px'},duration,'linear')
+   $(".timer:visible").animate(
+     {
+       width: '0px'
+     },
+     {
+       easing:'linear',
+       duration: duration,
+       progress: function(anim,progress,remainingMs) {
+         $(".timeRemaining").text(Math.round(remainingMs/100)/10 + " s");
+       }
+     }
+   )
 }
 
-function showWordRound() {
-  $("#imageRoundContainer").hide();
-  $("#voteRoundContainer").hide();
-
-  $("#wordRoundContainer").fadeIn({duration: 300});
+var roundids = ["word","image","vote"];
+function showRound(id) {
+  console.log(id)
+  $(".roundContainer").hide();
+  $("#"+id+"RoundContainer").fadeIn({duration: 300});
 }
 
-function showImageRound() {
-  $("#wordRoundContainer").hide();
-  $("#voteRoundContainer").hide();
-
-  $("#imageRoundContainer").fadeIn({duration: 300});
+function startRound(roundNumber,expireTime) {
+    showRound(roundids[roundNumber-1]);
+    now = (new Date()).getTime()
+    dt = expireTime>now ? expireTime - now : 0;
+    startTimer(dt);
 }
-
-function showVoteRound() {
-  $("#wordRoundContainer").hide();
-  $("#imageRoundContainer").hide();
-
-  $("#voteRoundContainer").fadeIn({duration: 300});
-}
-
-// setTimeout(showImageRound,1000);
-// setTimeout(showVoteRound,2000);

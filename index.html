@@ -7,14 +7,27 @@
 	<script src="/static/js/captiongameclient.js"></script>
 
 	<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+	<style>
+		.timer {
+	    color: #fff;
+	    background-color: #337ab7;
+	    border-color: #2e6da4;
+			height: 40px;
+			padding: 0px;
+			display: inline-block;
+			border-radius: 0px 5px 5px 0px;
+			width:	100%;
+		}
+	</style>
 </head>
 <body>
+	<audio id="sndReady" src="/static/audio/ready.wav"></audio>
 	<!-- <button onClick="doGame()">Start a game</button> -->
 	<!-- <div id="landingPageContainer" class="container"> -->
 	<!-- <div id="appContainer" class="container">
 		<div class="row" style="height: 2%">a row to hold...stuff</div>
 		<div class="row" style="height: 96%"> -->
-			<div id="wordRoundContainer" class="container">
+			<div id="wordRoundContainer" class="container roundContainer">
 				<div class="row">
 					<h1 class="text-center">Word Draft!</h1>
 				</div>
@@ -39,13 +52,14 @@
 					<h2 class="text-center">Your Words: 5/10 </h2>
 				</div>
 				<div class="row">
-					<h3 class="text-center">Time Remaining</h3>
+					<h3 class="text-center">Time Remaining: <span class="timeRemaining">0:00</span></h3>
 				</div>
 				<div class="row">
-					<p><a class="timer left-block btn btn-primary btn-md" style="padding: 0px; width:100%" role="button">Timer Placeholder</a></p>
+					<!-- <p><a class="timer left-block btn btn-primary btn-md" style="padding: 0px; width:100%" role="button">Timer Placeholder</a></p> -->
+					<p><a class="timer left-block" role="button">Timer Placeholder</a></p>
 				</div>
 			</div>
-			<div id="imageRoundContainer" class="container" style="display:none">
+			<div id="imageRoundContainer" class="container roundContainer" style="display:none">
 				<div class="container">
 					<div class="row">
 						<h1 class="text-center">Make a Sentence!</h1>
@@ -81,14 +95,14 @@
 						<h4 class="text-center"> A Diabetic Doge</h4>
 					</div>
 					<div class="row">
-						<h3 class="text-center">Time Remaining</h3>
+						<h3 class="text-center">Time Remaining: <span class="timeRemaining">0:00</span></h3>
 					</div>
 					<div class="row">
 						<p><a class="timer center-block btn btn-primary btn-md" role="button">Timer Placeholder</a></p>
 					</div>
 				</div>
 			</div>
-			<div id="voteRoundContainer" class="container" style="display:none"> <!-- voteRoundContainer placeholder -->
+			<div id="voteRoundContainer" class="container roundContainer" style="display:none"> <!-- voteRoundContainer placeholder -->
 				<div class="container">
 					<div class="row">
 						<h1 class="text-center">Pick Your Favorite!</h1>
@@ -106,7 +120,7 @@
 						<p><a class="center-block btn btn-primary btn-md" role="button">A Flacid Doge</a></p>
 						<p><a class="center-block btn btn-primary btn-md" role="button">A Soggy Doge</a></p>
 					</div>
-					<h3 class="text-center">Time Remaining</h3>
+					<h3 class="text-center">Time Remaining: <span class="timeRemaining">0:00</span></h3>
 				</div>
 				<div class="row">
 					<p><a class="timer center-block btn btn-primary btn-md" role="button">Timer Placeholder</a></p>
