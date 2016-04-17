@@ -1,11 +1,118 @@
 <html>
 <head>
-	<script src="https://cdn.socket.io/socket.io-1.4.3.js"></script>
-	<!--<script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>-->
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+	<script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+	<script src="https://code.jquery.com/jquery-2.2.3.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
 	<script src="/static/js/captiongameclient.js"></script>
-  <script src="https://code.jquery.com/jquery-2.2.3.min.js"></script>
+
+	<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
 </head>
 <body>
-	<button onClick="doGame()">Start a game</button>
+	<!-- <button onClick="doGame()">Start a game</button> -->
+	<!-- <div id="landingPageContainer" class="container"> -->
+	<!-- <div id="appContainer" class="container">
+		<div class="row" style="height: 2%">a row to hold...stuff</div>
+		<div class="row" style="height: 96%"> -->
+			<div id="wordRoundContainer" class="container">
+				<div class="row">
+					<h1 class="text-center">Word Draft!</h1>
+				</div>
+				<div class="row"  style ="height: 59.2%; overflow: scroll;">
+					<div class="col-xs-6">
+						<p><a class="center-block btn btn-primary btn-lg" role="button">Cupcake</a></p>
+						<p><a class="center-block btn btn-primary btn-lg" role="button">Sweet</a></p>
+						<p><a class="center-block btn btn-primary btn-lg" role="button">Corpulent</a></p>
+						<p><a class="center-block btn btn-primary btn-lg" role="button">Dumb</a></p>
+						<p><a class="center-block btn btn-primary btn-lg" role="button">Blue</a></p>
+						<p><a class="center-block btn btn-primary btn-lg" role="button">Hairy</a></p>
+					</div>
+					<div class="col-xs-6">
+						<p><a class="center-block btn btn-primary btn-lg" role="button">Doge</a></p>
+						<p><a class="center-block btn btn-primary btn-lg" role="button">Diabetic</a></p>
+						<p><a class="center-block btn btn-primary btn-lg" role="button">Yellow</a></p>
+						<p><a class="center-block btn btn-primary btn-lg" role="button">Ugly</a></p>
+						<p><a class="center-block btn btn-primary btn-lg" role="button">Cats</a></p>
+					</div>
+				</div>
+				<div class="row">
+					<h2 class="text-center">Your Words: 5/10 </h2>
+				</div>
+				<div class="row">
+					<h3 class="text-center">Time Remaining</h3>
+				</div>
+				<div class="row">
+					<p><a class="center-block btn btn-primary btn-md" role="button">Timer Placeholder</a></p>
+				</div>
+			</div>
+			<div id="imageRoundContainer" class="container" style="display:none">
+				<div class="container">
+					<div class="row">
+						<h1 class="text-center">Make a Sentence!</h1>
+					</div>
+					<div class="row">
+						<div class="col-xs-6">
+							<img src="Doge_Image.jpg" class = "img-responsive">
+						</div>
+						<div class="col-xs-6">
+							<p><a class="center-block btn btn-primary btn-lg" role="button">Freebies!</a></p>
+						</div>
+					</div>
+					<div class="row">
+						<h2 class="text-center">Your Words</h2>
+					</div>
+					<div class="row" style ="height: 26.4%; overflow: scroll;">
+						<div class="col-xs-6">
+							<p><a class="center-block btn btn-primary btn-lg" role="button">Cupcake</a></p>
+							<p><a class="center-block btn btn-primary btn-lg" role="button">Sweet</a></p>
+							<p><a class="center-block btn btn-primary btn-lg" role="button">Fat</a></p>
+							<p><a class="center-block btn btn-primary btn-lg" role="button">Dumb</a></p>
+						</div>
+						<div class="col-xs-6">
+							<p><a class="center-block btn btn-primary btn-lg" role="button">Doge</a></p>
+							<p><a class="center-block btn btn-primary btn-lg" role="button">Diabetic</a></p>
+							<p><a class="center-block btn btn-primary btn-lg" role="button">Yellow</a></p>
+						</div>
+					</div>
+					<div class="row">
+						<h2 class="text-center">Your sentence</h2>
+					</div>
+					<div class="row">
+						<h4 class="text-center"> A Diabetic Doge</h4>
+					</div>
+					<div class="row">
+						<h3 class="text-center">Time Remaining</h3>
+					</div>
+					<div class="row">
+						<p><a class="center-block btn btn-primary btn-md" role="button">Timer Placeholder</a></p>
+					</div>
+				</div>
+			</div>
+			<div id="voteRoundContainer" class="container" style="display:none"> <!-- voteRoundContainer placeholder -->
+				<div class="container">
+					<div class="row">
+						<h1 class="text-center">Pick Your Favorite!</h1>
+					</div>
+					<div class="row">
+						<img src="Doge_Image.jpg" class = "img-responsive">
+					</div>
+					<div class="row">
+						<h2 class="text-center">Friends' Sentences</h2>
+					</div>
+					<div class="row" style ="height: 27.3%; overflow: scroll;">
+						<p><a class="center-block btn btn-primary btn-md" role="button">A Diabetic Doge</a></p>
+						<p><a class="center-block btn btn-primary btn-md" role="button">A Corpulent Doge</a></p>
+						<p><a class="center-block btn btn-primary btn-md" role="button">A Yellow Doge</a></p>
+						<p><a class="center-block btn btn-primary btn-md" role="button">A Flacid Doge</a></p>
+						<p><a class="center-block btn btn-primary btn-md" role="button">A Soggy Doge</a></p>
+					</div>
+					<h3 class="text-center">Time Remaining</h3>
+				</div>
+				<div class="row">
+					<p><a class="center-block btn btn-primary btn-md" role="button">Timer Placeholder</a></p>
+				</div>
+			</div>
+		</div>
+	<!-- </div> -->
 </body>
 </html>
