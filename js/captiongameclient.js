@@ -27,8 +27,14 @@ socket.on('sentenceAccepted', function() {
 });
 
 socket.on('gameEnd', function(data) {
-  $('#winningSentence').text(data.sentence);
+  if ([].concat(data.sentence).length > 1) {
+    winnerText = data.winner + " with the sentences: <br>"+ data.sentence.join('<br>');
+  } else {
+    winnerText = data.winner + ", with their sentence, <br>"+ data.sentence;
+  }
+  $('#winningSentence').html(winnerText);
   showRound("winner");
+  console.log(data);
   console.log("Game over!")
 });
 
@@ -67,7 +73,7 @@ function startRound(roundInfo) {
   if (roundInfo.votingPool.length > 0) {
     roundInfo.votingPool.forEach(function(e,i,a){
       $("#userGeneratedSentences")
-        .append($('<a class="center-block btn btn-primary btn-md" data-votenumber='+ i+1 + ' role="button">' + e + '</a>'));
+        .append($('<a class="center-block btn btn-primary btn-md" data-votenumber='+ (i+1) + ' role="button">' + e + '</a>'));
     })
   }
   showRound(roundids[roundNumber-1]);

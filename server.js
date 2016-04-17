@@ -78,7 +78,7 @@ io.on('connection', function(socket){
       } else {
         socket.emit('sentenceAccepted');
         games[msg.gameid].sentences[socket.id] = msg.sentence;
-        console.log("Sentences stored ",games[msg.gameid].sentences);
+        // console.log("Sentences stored ",games[msg.gameid].sentences);
       }
     });
 });
@@ -106,6 +106,7 @@ captionGame = function(gameid) {
       sentences: {},
       players: lazyClone(io.nsps['/'].adapter.rooms[gameid].sockets), // list of players in this room
       votingPool: [],
+      results: [],
 
       startGame : function () {
         console.log("Starting game with gameid ",this.gameid);
@@ -136,7 +137,27 @@ captionGame = function(gameid) {
       },
       endGame : function () {
         console.log("Game over!");
-        io.to(this.gameid).emit('gameEnd',{winner: "playername", sentence: "some very clever sentence"});
+        console.log(this.votes);
+        winner = "Nobody!";
+        sentence = "I have no mouth, and I must scream";
+        maxvotes = 0;
+        for ( prop in this.votes ) {
+          if ( this.votes.hasOwnProperty(prop) ) {
+            this.results[this.votes[prop]] = typeof(this.results[this.votes[prop]]) != "undefined" ? this.results[this.votes[prop]]+1 : 1;
+            if (this.results[this.votes[prop]] > maxvotes) {
+              maxvotes = this.results[this.votes[prop]];
+              winner = prop;
+              sentence = this.sentences[prop];
+            } else if (this.results[this.votes[prop]] == maxvotes ) {
+              winner = "A tie!"
+              sentence = [].concat(sentence,this.sentences[prop]);
+            }
+          }
+        }
+
+        console.log(this.results.sort());
+
+        io.to(this.gameid).emit('gameEnd',{winner: winner, sentence: sentence});
       }
     };
 };
