@@ -9,7 +9,7 @@ server.listen(port);
 
 app.use('/static',express.static(__dirname))
 //app.use('/',express.static(__dirname))
- app.get("/play*", function(req,res) {
+app.get("/play*", function(req,res) {
   //  console.log(req.url);
    res.sendFile(__dirname + '/index.html');
  });

@@ -48,3 +48,23 @@ function startRound(roundNumber,expireTime) {
     dt = expireTime>now ? expireTime - now : 0;
     startTimer(dt);
 }
+
+$(function() {
+  $.getJSON({
+    url:"/static/freebies.json",
+    success: function(data) { console.log(data) }
+  })
+
+  // extract button word
+  $(".btn").on('click',function() {
+    input = $("#userSentence");
+    word = $(this).text();
+    console.log(input);
+    console.log(word);
+    if ( input.val().indexOf(word) < 0 ) {
+      // check if there's already a space with ternary
+      hasSpace = input.val().length == 0 || input.val().substr(-1,1) == " ";
+      input.val( input.val() + (hasSpace ? "" : " ") + word + " " );
+    }
+  })
+});
