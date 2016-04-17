@@ -54,13 +54,20 @@ $(function() {
     url:"/static/freebies.json",
     success: function(data) { console.log(data) }
   })
+  var playerWords = ["Fat","Ugly","Bad","Diabetic","Dumb"]
+  //var test = ;
+  //Populate the player wordbank
+  playerWords.forEach(function(e){
+    $("#playerWordBank").append($('<a style="width: 50%" class="btn btn-primary btn-lg" role="button">' + e + '</a>'));
+  })
 
   // extract button word
-  $(".btn").on('click',function() {
+  $('#imageRoundContainer').on('click', '.btn',function() {
     input = $("#userSentence");
     word = $(this).text();
-    console.log(input);
-    console.log(word);
+    $(this).css({'background-color' : 'red',
+                 'opacity' : '.35'
+    })
     if ( input.val().indexOf(word) < 0 ) {
       // check if there's already a space with ternary
       hasSpace = input.val().length == 0 || input.val().substr(-1,1) == " ";
