@@ -36,19 +36,19 @@ function doGame() {
 }
 
 function startTimer(duration) {
-   $(".timer:visible").width('100%')
-   $(".timer:visible").animate(
-     {
-       width: '0px'
-     },
-     {
-       easing:'linear',
-       duration: duration,
-       progress: function(anim,progress,remainingMs) {
-         $(".timeRemaining").text(Math.round(remainingMs/100)/10 + " s");
-       }
-     }
-   )
+  $(".timer:visible").width('100%')
+  $(".timer:visible").animate(
+    {
+      width: '0px'
+    },
+    {
+      easing:'linear',
+      duration: duration,
+      progress: function(anim,progress,remainingMs) {
+        $(".timeRemaining").text(Math.round(remainingMs/100)/10 + " s");
+      }
+    }
+  )
 }
 
 var roundids = ["word","image","vote","winner"];
@@ -58,15 +58,15 @@ function showRound(id) {
 }
 
 function startRound(roundInfo) {
-    roundNumber = roundInfo.roundNumber;
-    expireTime = roundInfo.expireTime;
-    if (roundInfo.image != "") {
-      $(".roundImage").attr("src",roundInfo.image);
-    }
-    showRound(roundids[roundNumber-1]);
-    now = (new Date()).getTime()
-    dt = expireTime>now ? expireTime - now : 0;
-    startTimer(dt);
+  roundNumber = roundInfo.roundNumber;
+  expireTime = roundInfo.expireTime;
+  if (roundInfo.image != "") {
+    $(".roundImage").attr("src",roundInfo.image);
+  }
+  showRound(roundids[roundNumber-1]);
+  now = (new Date()).getTime()
+  dt = expireTime>now ? expireTime - now : 0;
+  startTimer(dt);
 }
 
 var freebies;
@@ -108,20 +108,24 @@ $(function() {
   $('#freebieDropdownBody').on('click', '.btn',function() {
     input = $("#userSentence");
     word = $(this).text();
-      // check if there's already a space with ternary
-      hasSpace = input.val().length == 0 || input.val().substr(-1,1) == " ";
-      input.val( input.val() + (hasSpace ? "" : " ") + word + " " );
+    // check if there's already a space with ternary
+    hasSpace = input.val().length == 0 || input.val().substr(-1,1) == " ";
+    input.val( input.val() + (hasSpace ? "" : " ") + word + " " );
     $('#myModal').modal('hide');
-  });
-
-  $('smallThumbnail').on('click',function(){
-    input = $("#userSentence");
-    console.log( "Submitting sentence:\n", input.val() );
-    socket.emit('sendSentence',{ sentence: input.val() });
   });
 
   $("#submitSentence").on('click',function(){
     input = $("#userSentence");
     socket.emit('sendSentence',{ sentence: input.val() });
   });
-});
+
+  $('#userGeneratedSentences').on('click', '.btn',function(){
+     input = $(this);
+     socket.emit('voteSentence',{ sentence: input.val() });
+  });
+
+  ${'#globalWordBank'}on('click', '.btn',function(){
+     input = $(this);
+     socket.emit('draftWord',{ sentence: input.val() });
+  });
+})
