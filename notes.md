@@ -11,18 +11,21 @@
 ## technical details
 ### front-end (Wu + James)
 * bootstrap layout for each 'view':
-  * word round view
-  * image round view
-  * vote round view
+  * design (Wu)
+    * [x] word round view
+    * [x] image round view
+    * [ ] vote round view
+  * implementation (James)
+    * [ ] show/hide containers for the 'dumb' way
 
 ### socket.io event system (James);
 example **incoming** and *outgoing* events:
-  * **newRound**, **roundOver**
+  * [ ]**newRound**, **roundOver**
     * word, image, or vote round
-  * **timeRemaining** (should this be an event or just a prescribed time?  probably the latter)
-  * *sendWord*
-  * *sendImageSentence*
-  * **wordTakenByPlayer**
+  * [ ]**timeRemaining** (should this be an event or just a prescribed time?  probably the latter)
+  * [ ] *sendWord*
+  * [ ] *sendImageSentence*
+  * [ ] **wordTakenByPlayer**
 
 ### back-end (James)
 * image DB (pre-seeded)
