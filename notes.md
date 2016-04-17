@@ -15,9 +15,10 @@
     * [x] word round view
     * [x] image round view
     * [x] vote round view
-  * implementation (James)
+  * implementation (Wu/James)
     * [x] show/hide containers for the 'dumb' way
-    * [ ] populate words from socket event
+    * [x] build sentence with known words
+    * [ ] populate word lists from socket event (☺)
     * [ ] populate image from socket event
     * [ ] populate vote from socket event
     * [ ] show the results of the vote
@@ -27,9 +28,8 @@
 
 ### socket.io event system (James);
 example **incoming** and *outgoing* events in socket.io:
-  * [ ]**newRound**
-  * [ ]**roundOver**
-  * [ ]**timeRemaining** (should this be an event or just a prescribed time?  probably the latter)
+  * [x]**newRound**
+    * [x] prescribed round end time
   * [ ] *sendWord*
   * [ ] *sendImageSentence*
   * [ ] *sendVote*
@@ -44,13 +44,17 @@ example **incoming** and *outgoing* events in socket.io:
   * [ ] starting the game, players join unique URL or whatever
   * [ ] generating words for draft, sending to players
   * [ ] tracking player word choices authoritatively
-  * [ ] timing for rounds, sending updates if relevant
-  * [ ] switching rounds with a signal
-  * [ ] tracking and authenticating sentences
+  * [x] timing for rounds, sending updates if relevant
+  * [x] switching rounds with a signal
+  * [ ] tracking and authenticating sentences (☺)
   * [ ] distributing sentences for vote round
   * [ ] tracking player votes and distributing when complete
 * socket.io for communication
 * node.js
+
+## THANKS
+* HackDFW staff
+* [FoolBoyMedia on FreeSound.org](https://www.freesound.org/people/FoolBoyMedia/sounds/234565/)
 
 ## ICING ON THE CAKE TIME
 
