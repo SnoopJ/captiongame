@@ -18,6 +18,9 @@
 			border-radius: 0px 5px 5px 0px;
 			width:	100%;
 		}
+		#userSentence {
+			width: 95%;
+		}
 	</style>
 </head>
 <body>
@@ -27,13 +30,14 @@
 	<!-- <div id="appContainer" class="container">
 		<div class="row" style="height: 2%">a row to hold...stuff</div>
 		<div class="row" style="height: 96%"> -->
-			<div id="wordRoundContainer" class="container roundContainer">
+			<!-- <div id="wordRoundContainer" class="container roundContainer"> -->
+			<div id="wordRoundContainer" class="container roundContainer" style="display:none">
 				<div class="row">
 					<h1 class="text-center">Word Draft!</h1>
 				</div>
 				<div class="row"  style ="height: 59.2%; overflow: scroll;">
 					<div class="col-xs-6">
-						<p><a class="center-block btn btn-primary btn-lg" role="button">Cupcake</a></p>
+						<p><a class="center-block btn btn-primary btn-lg" data-word="cupcake" role="button">Cupcake</a></p>
 						<p><a class="center-block btn btn-primary btn-lg" role="button">Sweet</a></p>
 						<p><a class="center-block btn btn-primary btn-lg" role="button">Corpulent</a></p>
 						<p><a class="center-block btn btn-primary btn-lg" role="button">Dumb</a></p>
@@ -56,10 +60,11 @@
 				</div>
 				<div class="row">
 					<!-- <p><a class="timer left-block btn btn-primary btn-md" style="padding: 0px; width:100%" role="button">Timer Placeholder</a></p> -->
-					<p><a class="timer left-block" role="button">Timer Placeholder</a></p>
+					<span class="timer center-block" >Timer Placeholder</span>
 				</div>
 			</div>
-			<div id="imageRoundContainer" class="container roundContainer" style="display:none">
+			<!-- <div id="imageRoundContainer" class="container roundContainer" style="display:none"> -->
+			<div id="imageRoundContainer" class="container roundContainer">
 				<div class="container">
 					<div class="row">
 						<h1 class="text-center">Make a Sentence!</h1>
@@ -92,17 +97,24 @@
 						<h2 class="text-center">Your sentence</h2>
 					</div>
 					<div class="row">
-						<h4 class="text-center"> A Diabetic Doge</h4>
+						<!-- <h4 class="text-center"> A Diabetic Doge</h4> -->
+						<div class="row">
+							<input class="form-control center-block" id="userSentence"></input>
+						</div>
+						<div class="row">
+							<button class="form-control center-block" id="submitSentence">Submit</button>
+						</div>
 					</div>
 					<div class="row">
 						<h3 class="text-center">Time Remaining: <span class="timeRemaining">0:00</span></h3>
 					</div>
 					<div class="row">
-						<p><a class="timer center-block btn btn-primary btn-md" role="button">Timer Placeholder</a></p>
+						<span class="timer center-block" >Timer Placeholder</span>
 					</div>
 				</div>
 			</div>
-			<div id="voteRoundContainer" class="container roundContainer" style="display:none"> <!-- voteRoundContainer placeholder -->
+			<!-- <div id="voteRoundContainer" class="container roundContainer">  -->
+			<div id="voteRoundContainer" class="container roundContainer" style="display:none">
 				<div class="container">
 					<div class="row">
 						<h1 class="text-center">Pick Your Favorite!</h1>
@@ -123,7 +135,8 @@
 					<h3 class="text-center">Time Remaining: <span class="timeRemaining">0:00</span></h3>
 				</div>
 				<div class="row">
-					<p><a class="timer center-block btn btn-primary btn-md" role="button">Timer Placeholder</a></p>
+					<!-- <p><a class="timer center-block btn btn-primary btn-md" role="button">Timer Placeholder</a></p> -->
+					<span class="timer left-block" >Timer Placeholder</span>
 				</div>
 			</div>
 		</div>
