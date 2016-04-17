@@ -83,6 +83,11 @@ $(function() {
     }
   })
 
+  var generatedSentences = ["First","Second","Third","Fourth","Fifth"]
+  generatedSentences.forEach(function(e,i,a){
+    $("#userGeneratedSentences").append($('<a class="center-block btn btn-primary btn-md" data-votenumber='+ i+1 + ' role="button">' + e + '</a>'));
+  })
+
   var playerWords = ["Fat","Ugly","Bad","Diabetic","Dumb"]
   //var test = ;
   //Populate the player wordbank
