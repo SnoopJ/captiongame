@@ -4,10 +4,17 @@ var server = require('http').Server(app);
 var io = require('socket.io')(server);
 var port = process.env.PORT || 80;
 
+var fs = require('fs');
+var freebies;
+fs.readFile('freebies.json', 'utf8', function (err, data) {
+  if (err) throw err;
+  freebies = JSON.parse(data).freebieWords;
+});
+
 app.set('port', port);
 server.listen(port);
 
-app.use('/static',express.static(__dirname))
+app.use('/static/',express.static(__dirname))
 //app.use('/',express.static(__dirname))
 app.get("/play*", function(req,res) {
   //  console.log(req.url);
@@ -15,6 +22,7 @@ app.get("/play*", function(req,res) {
  });
 
 io.on('connection', function(socket){
+    socket.join("gameRoom");
     console.log('client connected (id: ' + socket.id +' )');
     socket.on('disconnect', function(){
       console.log('client disconnected (id: ' + socket.id +' )');
@@ -25,6 +33,25 @@ io.on('connection', function(socket){
       game = new captionGame(socket);
       game.startGame();
     })
+    socket.on('sendSentence', function(msg) {
+      console.log("Message from " + socket.id);
+      playerWords = [
+        "cupcake",
+        "doge",
+        "sweet",
+        "diabetic",
+        "fat",
+        "yellow",
+        "dumb"
+      ];
+      words = msg.sentence.split(' ').filter(function(s) { return s!=""; });
+      words = words.filter(function(s){
+        return freebies.concat(playerWords).indexOf(s.toLowerCase())<0;
+      });
+      if (words.length>0) {
+        console.log("Illegal word(s) used, you dumbass",words)
+      }
+    });
 });
 
 var roundtime = 10000;
