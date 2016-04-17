@@ -69,6 +69,11 @@ $(function() {
     $("#playerWordBank").append($('<a style="width: 50%" class="btn btn-primary btn-lg" role="button">' + e + '</a>'));
   })
 
+  var globalWordBank = ["Fat","Ugly","Bad","Diabetic","Dumb","Corpulent","Doge","Red","Blue","Orange","Soggy","Sad","Opulent","Regal","Flacid"]
+  globalWordBank.forEach(function(e){
+    $("#globalWordBank").append($('<a style="width: 50%" class="btn btn-primary btn-lg" role="button">' + e + '</a>'));
+  })
+
   // extract button word
   $('#playerWordBank').on('click', '.btn',function() {
     input = $("#userSentence");
@@ -88,6 +93,13 @@ $(function() {
       input.val( input.val() + (hasSpace ? "" : " ") + word + " " );
     $('#myModal').modal('hide');
   });
+
+  $('smallThumbnail').on('click',function(){
+    input = $("#userSentence");
+    console.log( "Submitting sentence:\n", input.val() );
+    socket.emit('sendSentence',{ sentence: input.val() });
+  });
+
   $("#submitSentence").on('click',function(){
     input = $("#userSentence");
     console.log( "Submitting sentence:\n", input.val() );
