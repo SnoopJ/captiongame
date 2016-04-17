@@ -5,7 +5,9 @@ var io = require('socket.io')(server);
 var port = process.env.PORT || 80;
 
 var fs = require('fs');
-var freebies;
+var freebies = [];
+var games = {};
+
 fs.readFile('freebies.json', 'utf8', function (err, data) {
   if (err) throw err;
   freebies = JSON.parse(data).freebieWords;
@@ -17,7 +19,6 @@ server.listen(port);
 app.use('/static/',express.static(__dirname))
 //app.use('/',express.static(__dirname))
 app.get("/play*", function(req,res) {
-   console.log(req.url.split('/play'));
    res.sendFile(__dirname + '/index.html');
  });
 
@@ -28,19 +29,31 @@ io.on('connection', function(socket){
     });
 
     socket.on('joinGame', function(msg) {
-      socket.gameid = msg.gameid;
-      socket.join(msg.gameid);
+      gameid = msg.gameid;
+      console.log("Client " + socket.id + " is joining game with id " + gameid);
+      console.log(games[gameid]);
+      socket.join(gameid);
+      socket.gameid = gameid;
+      if (typeof(games[gameid] == "undefined")) {
+        game = new captionGame(gameid);
+        games[gameid] = game;
+        // console.log("Before init, votes is",games[gameid].votes);
+        // console.log("After init, votes is",games[gameid].votes);
+      }
       console.log( io.nsps['/'].adapter.rooms[msg.gameid] );
     });
 
     // TODO: ready mechanism?
     socket.on('startGame', function(){
       console.log("Received request from " + socket.id + " to start a game cycle");
-      game = new captionGame(socket.gameid);
       game.startGame(socket.gameid);
-    })
+    });
+    socket.on('handleVote', function(msg){
+      games[msg.gameid].votes[socket.id] = msg.voteFor;
+      //console.log( games[msg.gameid].votes );
+    });
     socket.on('sendSentence', function(msg) {
-//      console.log("Message from " + socket.id);
+      //console.log("Message from " + socket.id);
       // TODO: not hard-coded, but seeded from the word draft round
       playerWords = [
         "cupcake",
@@ -63,6 +76,8 @@ io.on('connection', function(socket){
         });
       } else {
         socket.emit('sentenceAccepted');
+        games[msg.gameid].sentences[socket.id] = msg.sentence;
+        console.log("Sentences stored ",games[msg.gameid].sentences);
       }
     });
 });
@@ -86,6 +101,8 @@ captionGame = function(gameid) {
       currentRound : 0,
       gameid: gameid,
       image: "/static/"+imageDB[ Math.floor( imageDB.length*Math.random() ) ],
+      votes: {},
+      sentences: {},
       //players: io.nsps['/'].adapter.rooms, // list of players in this room
       players: lazyClone(io.nsps['/'].adapter.rooms[gameid].sockets), // list of players in this room
 
@@ -115,7 +132,7 @@ captionGame = function(gameid) {
       },
       endGame : function () {
         console.log("Game over!");
-        io.to(this.gameid).emit('gameEnd');
+        io.to(this.gameid).emit('gameEnd',{winner: "playername", sentence: "some very clever sentence"});
       }
     };
 };

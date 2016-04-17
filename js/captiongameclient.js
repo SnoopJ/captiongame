@@ -28,11 +28,13 @@ socket.on('sentenceAccepted', function() {
 
 socket.on('gameEnd', function(data) {
   console.log("Game over!")
-  startRound(1,0);
+  $('#winningSentence').text(data.sentence);
+  showRound("winner");
+  //startRound(1,0);
 });
 
 function doGame() {
-  socket.emit('startGame')
+  socket.emit('startGame',{gameid: gameid})
 }
 
 function startTimer(duration) {
@@ -117,11 +119,11 @@ $(function() {
   $('smallThumbnail').on('click',function(){
     input = $("#userSentence");
     console.log( "Submitting sentence:\n", input.val() );
-    socket.emit('sendSentence',{ sentence: input.val() });
+    socket.emit('sendSentence',{ sentence: input.val(), gameid: gameid });
   });
 
   $("#submitSentence").on('click',function(){
     input = $("#userSentence");
-    socket.emit('sendSentence',{ sentence: input.val() });
+    socket.emit('sendSentence',{ sentence: input.val(), gameid: gameid });
   });
 });
