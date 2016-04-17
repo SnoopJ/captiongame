@@ -49,7 +49,7 @@ function startTimer(duration) {
    )
 }
 
-var roundids = ["word","image","vote"];
+var roundids = ["word","image","vote","winner"];
 function showRound(id) {
   $(".roundContainer").hide();
   $("#"+id+"RoundContainer").fadeIn({duration: 300});
@@ -73,8 +73,13 @@ $(function() {
     url:"/static/freebies.json",
     success: function(data) {
       freebies = data.freebieWords;
+      freebies.forEach(function(e){
+        $("#freebieDropdownBody").append($('<a style="width: 50%" class="btn btn-primary btn-lg" role="button">' + e + '</a>'));
+      })
+      // console.log("freebie words:",freebies);
     }
   })
+
   var playerWords = ["Fat","Ugly","Bad","Diabetic","Dumb"]
   //var test = ;
   //Populate the player wordbank
@@ -82,8 +87,13 @@ $(function() {
     $("#playerWordBank").append($('<a style="width: 50%" class="btn btn-primary btn-lg" role="button">' + e + '</a>'));
   })
 
+  var globalWordBank = ["Fat","Ugly","Bad","Diabetic","Dumb","Corpulent","Doge","Red","Blue","Orange","Soggy","Sad","Opulent","Regal","Flacid"]
+  globalWordBank.forEach(function(e){
+    $("#globalWordBank").append($('<a style="width: 50%" class="btn btn-primary btn-lg" role="button">' + e + '</a>'));
+  })
+
   // extract button word
-  $('#imageRoundContainer').on('click', '.btn',function() {
+  $('#playerWordBank').on('click', '.btn',function() {
     input = $("#userSentence");
     word = $(this).text();
     if ( input.val().indexOf(word) < 0 ) {
@@ -92,6 +102,22 @@ $(function() {
       input.val( input.val() + (hasSpace ? "" : " ") + word + " " );
     }
   });
+
+  $('#freebieDropdownBody').on('click', '.btn',function() {
+    input = $("#userSentence");
+    word = $(this).text();
+      // check if there's already a space with ternary
+      hasSpace = input.val().length == 0 || input.val().substr(-1,1) == " ";
+      input.val( input.val() + (hasSpace ? "" : " ") + word + " " );
+    $('#myModal').modal('hide');
+  });
+
+  $('smallThumbnail').on('click',function(){
+    input = $("#userSentence");
+    console.log( "Submitting sentence:\n", input.val() );
+    socket.emit('sendSentence',{ sentence: input.val() });
+  });
+
   $("#submitSentence").on('click',function(){
     input = $("#userSentence");
     socket.emit('sendSentence',{ sentence: input.val() });
