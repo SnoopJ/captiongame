@@ -124,7 +124,7 @@ $(function() {
      socket.emit('voteSentence',{ sentence: input.val() });
   });
 
-  ${'#globalWordBank'}on('click', '.btn',function(){
+  $('#globalWordBank').on('click', '.btn',function(){
      input = $(this);
      socket.emit('draftWord',{ sentence: input.val() });
   });
