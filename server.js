@@ -62,18 +62,25 @@ io.on('connection', function(socket){
 });
 
 var roundtime = 3000;
-var imageDB = ["/static/Doge_Image.jpg","/static/rarepepe.png"];
+var imageDB = [
+  "Doge_Image.jpg",
+  "rarepepe.png",
+  "xY2xDxo.jpg",
+  "HdkHVRb.jpg",
+  "CWlEICI.jpg",
+  "5Hh7Yqz.jpg"
+];
 captionGame = function(sock) {
     return {
       numRounds: 3,
       roundDuration: [roundtime,roundtime,roundtime],
       currentRound : 0,
       socket: sock,
-      image: imageDB[ Math.floor( imageDB.length*Math.random() ) ],
+      image: "/static/"+imageDB[ Math.floor( imageDB.length*Math.random() ) ],
 
       startGame : function () {
         console.log("Starting game!");
-        this.socket.emit('gameStart');
+        io.emit('gameStart');
         var self = this;
         self.nextRound();
         //setTimeout(function() { self.nextRound() },self.roundDuration[0]);
@@ -84,7 +91,7 @@ captionGame = function(sock) {
         } else {
           this.currentRound += 1;
           // console.log("Going to round " + this.currentRound);
-          this.socket.emit('nextRound',{
+          io.emit('nextRound',{
             roundNumber: this.currentRound,
             expireTime: (new Date()).getTime() + this.roundDuration[this.currentRound-1],
             image: this.currentRound > 1 ? this.image : ""
@@ -95,7 +102,7 @@ captionGame = function(sock) {
       },
       endGame : function () {
         console.log("Game over!");
-        this.socket.emit('gameEnd');
+        io.emit('gameEnd');
       }
     };
 };
