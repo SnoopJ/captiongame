@@ -14,22 +14,41 @@
   * design (Wu)
     * [x] word round view
     * [x] image round view
-    * [ ] vote round view
+    * [x] vote round view
   * implementation (James)
-    * [ ] show/hide containers for the 'dumb' way
+    * [x] show/hide containers for the 'dumb' way
+    * [ ] populate words from socket event
+    * [ ] populate image from socket event
+    * [ ] populate vote from socket event
+    * [ ] show the results of the vote
+    * [ ] send word choices with socket event
+    * [ ] send sentence with socket event
+    * [ ] send vote with socket event
 
 ### socket.io event system (James);
-example **incoming** and *outgoing* events:
-  * [ ]**newRound**, **roundOver**
-    * word, image, or vote round
+example **incoming** and *outgoing* events in socket.io:
+  * [ ]**newRound**
+  * [ ]**roundOver**
   * [ ]**timeRemaining** (should this be an event or just a prescribed time?  probably the latter)
   * [ ] *sendWord*
   * [ ] *sendImageSentence*
+  * [ ] *sendVote*
   * [ ] **wordTakenByPlayer**
+  * [ ] **sentenceReults**
+  * [ ] **voteReults**
 
 ### back-end (James)
 * image DB (pre-seeded)
   * download a bunch of images
+* [ ] game logic
+  * [ ] starting the game, players join unique URL or whatever
+  * [ ] generating words for draft, sending to players
+  * [ ] tracking player word choices authoritatively
+  * [ ] timing for rounds, sending updates if relevant
+  * [ ] switching rounds with a signal
+  * [ ] tracking and authenticating sentences
+  * [ ] distributing sentences for vote round
+  * [ ] tracking player votes and distributing when complete
 * socket.io for communication
 * node.js
 
