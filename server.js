@@ -37,8 +37,6 @@ io.on('connection', function(socket){
       if (typeof(games[gameid] == "undefined")) {
         game = new captionGame(gameid);
         games[gameid] = game;
-        // console.log("Before init, votes is",games[gameid].votes);
-        // console.log("After init, votes is",games[gameid].votes);
       }
       console.log( io.nsps['/'].adapter.rooms[msg.gameid] );
     });
@@ -49,8 +47,11 @@ io.on('connection', function(socket){
       game.startGame(socket.gameid);
     });
     socket.on('voteSentence', function(msg){
+      if (typeof(games[msg.gameid]) == "undefined" ) {
+        console.error("Unknown game")
+      }
       games[msg.gameid].votes[socket.id] = msg.voteFor;
-      //console.log( games[msg.gameid].votes );
+      console.log("Votes ", games[msg.gameid].votes );
     });
     socket.on('sendSentence', function(msg) {
       //console.log("Message from " + socket.id);
