@@ -126,7 +126,6 @@ io.on('connection', function(socket){
 lazyClone = function(obj) {
   return JSON.parse(JSON.stringify(obj));
 }
-var roundtime = 10000;
 var imageDB = [
   "Doge_Image.jpg",
   "rarepepe.png",
@@ -144,7 +143,7 @@ captionGame = function(gameid) {
     return {
       running: false,
       numRounds: 3,
-      roundDuration: [0,roundtime,roundtime],
+      roundDuration: [0,30000,20000],
       currentRound : 1,
       gameid: gameid,
       image: "/static/"+imageDB[ Math.floor( imageDB.length*Math.random() ) ], // randomly chosen image from our DB
@@ -201,6 +200,9 @@ captionGame = function(gameid) {
           }
         })
         win = sorted.pop();
+        while( typeof(win) == "undefined" || typeof(win.sender) == "undefined" || typeof(this.players[win.sender]) == "undefined" ) {
+          win = sorted.pop();
+        }
         winner = this.players[win.sender];
         sentence = win.sentence;
         var popped;
@@ -238,7 +240,6 @@ captionGame = function(gameid) {
         this.playersReady = {};
         this.running=false;
         this.numRounds= 3;
-        this.roundDuration= [roundtime/10,roundtime,roundtime];
         this.currentRound = 0;
         this.gameid= gameid;
         this.image= "/static/"+imageDB[ Math.floor( imageDB.length*Math.random() ) ]; // randomly chosen image from our DB

@@ -34,8 +34,10 @@ socket.on('playersReady',function(msg){
 socket.on('gameEnd', function(data) {
   if ([].concat(data.sentence).length > 1) {
     winnerText = data.winner + " with the sentences: <br>"+ data.sentence.join('<br>');
-  } else {
+  } else if ([].concat(data.sentence).length == 1) {
     winnerText = data.winner + ", with their sentence, <br>"+ data.sentence;
+  } else {
+    winnerText = "Nobody at all.  Anybody home?";
   }
   $("#userGeneratedSentences").empty();
   // $("#playerWordBank,#globalWordBank").empty();
@@ -86,6 +88,7 @@ function startRound(roundInfo) {
   }
   if (roundInfo.votingPool.length > 0) {
     roundInfo.votingPool.forEach(function(e,i,a){
+      if ( e == null ) { return }
       $("#userGeneratedSentences")
         .append($('<a class="center-block btn btn-primary btn-md" data-votenumber='+ (i+1) + ' role="button">' + e + '</a>'));
     })
