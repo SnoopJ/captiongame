@@ -23,9 +23,9 @@ app.get("/play*", function(req,res) {
 
 io.on('connection', function(socket){
     socket.join("gameRoom");
-    console.log('client connected (id: ' + socket.id +' )');
+    // console.log('client connected (id: ' + socket.id +' )');
     socket.on('disconnect', function(){
-      console.log('client disconnected (id: ' + socket.id +' )');
+      // console.log('client disconnected (id: ' + socket.id +' )');
     });
 
     socket.on('startGame', function(){
@@ -34,7 +34,8 @@ io.on('connection', function(socket){
       game.startGame();
     })
     socket.on('sendSentence', function(msg) {
-      console.log("Message from " + socket.id);
+//      console.log("Message from " + socket.id);
+      // TODO: not hard-coded, but seeded from the word draft round
       playerWords = [
         "cupcake",
         "doge",
@@ -45,11 +46,17 @@ io.on('connection', function(socket){
         "dumb"
       ];
       words = msg.sentence.split(' ').filter(function(s) { return s!=""; });
-      words = words.filter(function(s){
+      badwords = words.filter(function(s){
         return freebies.concat(playerWords).indexOf(s.toLowerCase())<0;
       });
-      if (words.length>0) {
-        console.log("Illegal word(s) used, you dumbass",words)
+      if (badwords.length>0 || words.length == badwords.length) {
+        socket.emit('invalidSentence',{
+          sentence: msg.sentence,
+          invalidWords: badwords,
+          empty: (words.length == 0)
+        });
+      } else {
+        socket.emit('sentenceAccepted');
       }
     });
 });
@@ -74,7 +81,7 @@ captionGame = function(sock) {
           this.endGame();
         } else {
           this.currentRound += 1;
-          console.log("Going to round " + this.currentRound);
+          // console.log("Going to round " + this.currentRound);
           this.socket.emit('nextRound',{
             n: this.currentRound,
             expiretime: (new Date()).getTime() + this.roundDuration[this.currentRound-1]
