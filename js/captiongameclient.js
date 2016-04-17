@@ -27,12 +27,13 @@ socket.on('sentenceAccepted', function() {
 });
 
 socket.on('gameEnd', function(data) {
+  $('#winningSentence').text(data.sentence);
+  showRound("winner");
   console.log("Game over!")
-  startRound(1,0);
 });
 
 function doGame() {
-  socket.emit('startGame')
+  socket.emit('startGame',{gameid: gameid})
 }
 
 function startTimer(duration) {
@@ -116,16 +117,19 @@ $(function() {
 
   $("#submitSentence").on('click',function(){
     input = $("#userSentence");
-    socket.emit('sendSentence',{ sentence: input.val() });
+    socket.emit('sendSentence',{ sentence: input.val(), gameid: gameid });
   });
 
   $('#userGeneratedSentences').on('click', '.btn',function(){
-     input = $(this);
-     socket.emit('voteSentence',{ sentence: input.val() });
+     console.log("vote button pressed");
+     btn = $(this);
+     console.log(btn);
+     console.log(btn.data()['votenumber']);
+     socket.emit('voteSentence',{ sentence: btn.text(), voteFor: btn.data()['votenumber'], gameid: gameid });
   });
 
   $('#globalWordBank').on('click', '.btn',function(){
-     input = $(this);
-     socket.emit('draftWord',{ sentence: input.val() });
+     btn = $(this);
+     socket.emit('draftWord',{ sentence: btn.text(), gameid: gameid });
   });
 })
