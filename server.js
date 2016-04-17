@@ -8,10 +8,11 @@ app.set('port', port);
 server.listen(port);
 
 app.use('/static',express.static(__dirname))
-app.use('/',express.static(__dirname))
-// app.get("/", function(req,res) {
-//   res.sendFile(__dirname + '/index.html');
-// });
+//app.use('/',express.static(__dirname))
+ app.get("/play*", function(req,res) {
+  //  console.log(req.url);
+   res.sendFile(__dirname + '/index.html');
+ });
 
 io.on('connection', function(socket){
     console.log('client connected (id: ' + socket.id +' )');
@@ -29,6 +30,7 @@ io.on('connection', function(socket){
 captionGame = function(sock) {
     return {
       numRounds: 3,
+      roundDuration: [10000,10000,10000],
       currentRound : 1,
       socket: sock,
 
@@ -36,7 +38,7 @@ captionGame = function(sock) {
         console.log("Starting game!");
         this.socket.emit('gameStart');
         var self = this;
-        setTimeout(function() { self.nextRound() },1500);
+        setTimeout(function() { self.nextRound() },self.roundDuration[0]);
       },
       nextRound : function () {
         if (this.currentRound >= this.numRounds) {
@@ -46,7 +48,7 @@ captionGame = function(sock) {
           console.log("Going to round " + this.currentRound);
           this.socket.emit('nextRound',{n: this.currentRound});
           var self = this;
-          setTimeout(function() { self.nextRound() },1500);
+          setTimeout(function() { self.nextRound() },self.roundDuration[self.currentRound-1]);
         }
       },
       endGame : function () {
