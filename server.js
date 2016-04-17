@@ -2,7 +2,7 @@ var express = require('express');
 var app = express();
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
-var port = process.env.PORT || 8080;
+var port = process.env.PORT || 80;
 
 var fs = require('fs');
 var freebies;
@@ -61,13 +61,15 @@ io.on('connection', function(socket){
     });
 });
 
-var roundtime = 10000;
+var roundtime = 3000;
+var imageDB = ["/static/Doge_Image.jpg","/static/rarepepe.png"];
 captionGame = function(sock) {
     return {
       numRounds: 3,
       roundDuration: [roundtime,roundtime,roundtime],
       currentRound : 0,
       socket: sock,
+      image: imageDB[ Math.floor( imageDB.length*Math.random() ) ],
 
       startGame : function () {
         console.log("Starting game!");
@@ -83,8 +85,9 @@ captionGame = function(sock) {
           this.currentRound += 1;
           // console.log("Going to round " + this.currentRound);
           this.socket.emit('nextRound',{
-            n: this.currentRound,
-            expiretime: (new Date()).getTime() + this.roundDuration[this.currentRound-1]
+            roundNumber: this.currentRound,
+            expireTime: (new Date()).getTime() + this.roundDuration[this.currentRound-1],
+            image: this.currentRound > 1 ? this.image : ""
           });
           var self = this;
           setTimeout(function() { self.nextRound() },self.roundDuration[self.currentRound-1]);

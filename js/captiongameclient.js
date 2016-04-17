@@ -6,7 +6,8 @@ socket.on('gameStart', function(data) {
 });
 
 socket.on('nextRound', function(roundInfo) {
-  startRound(roundInfo.n,roundInfo.expiretime);
+  console.log(roundInfo);
+  startRound(roundInfo);
 });
 
 socket.on('invalidSentence', function(msg) {
@@ -54,7 +55,12 @@ function showRound(id) {
   $("#"+id+"RoundContainer").fadeIn({duration: 300});
 }
 
-function startRound(roundNumber,expireTime) {
+function startRound(roundInfo) {
+    roundNumber = roundInfo.roundNumber;
+    expireTime = roundInfo.expireTime;
+    if (roundInfo.image != "") {
+      $(".roundImage").attr("src",roundInfo.image);
+    }
     showRound(roundids[roundNumber-1]);
     now = (new Date()).getTime()
     dt = expireTime>now ? expireTime - now : 0;
