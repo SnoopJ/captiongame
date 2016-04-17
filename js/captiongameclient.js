@@ -27,14 +27,8 @@ socket.on('sentenceAccepted', function() {
 });
 
 socket.on('gameEnd', function(data) {
-  if ([].concat(data.sentence).length > 1) {
-    winnerText = data.winner + " with the sentences: <br>"+ data.sentence.join('<br>');
-  } else {
-    winnerText = data.winner + ", with their sentence, <br>"+ data.sentence;
-  }
-  $('#winningSentence').html(winnerText);
+  $('#winningSentence').text(data.sentence);
   showRound("winner");
-  console.log(data);
   console.log("Game over!")
 });
 
@@ -73,7 +67,7 @@ function startRound(roundInfo) {
   if (roundInfo.votingPool.length > 0) {
     roundInfo.votingPool.forEach(function(e,i,a){
       $("#userGeneratedSentences")
-        .append($('<a class="center-block btn btn-primary btn-md" data-votenumber='+ (i+1) + ' role="button">' + e + '</a>'));
+        .append($('<a class="center-block btn btn-primary btn-md" data-votenumber='+ i+1 + ' role="button">' + e + '</a>'));
     })
   }
   showRound(roundids[roundNumber-1]);
@@ -89,7 +83,7 @@ $(function() {
     success: function(data) {
       freebies = data.freebieWords;
       freebies.forEach(function(e){
-        $("#freebieDropdownBody").append($('<a style="width: 50%" class="btn btn-primary btn-lg" role="button">' + e + '</a>'));
+        $("#freebieDropdownBody").append($('<a style="width: 45%; margin-left:2.5%; margin-right:2.5%;" class="btn btn-primary btn-lg" role="button">' + e + '</a>'));
       })
       // console.log("freebie words:",freebies);
     }
@@ -100,7 +94,7 @@ $(function() {
   //var test = ;
   //Populate the player wordbank
   playerWords.forEach(function(e){
-    $("#playerWordBank").append($('<a style="width: 50%" class="btn btn-primary btn-lg" role="button">' + e + '</a>'));
+    $("#playerWordBank").append($('<a style="width:45%; margin-left:2.5%; margin-right:2.5%;" class="btn btn-primary btn-lg" role="button">' + e + '</a>'));
   })
 
   var globalWordBank = ["Fat","Ugly","Bad","Diabetic","Dumb","Corpulent","Doge","Red","Blue","Orange","Soggy","Sad","Opulent","Regal","Flacid"]
