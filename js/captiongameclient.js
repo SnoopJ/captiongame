@@ -1,4 +1,6 @@
+var gameid = window.location.pathname.split("/play")[1];
 var socket = io();
+socket.emit('joinGame',{gameid: gameid});
 
 socket.on('gameStart', function(data) {
   console.log("Game started!");

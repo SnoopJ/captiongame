@@ -17,21 +17,27 @@ server.listen(port);
 app.use('/static/',express.static(__dirname))
 //app.use('/',express.static(__dirname))
 app.get("/play*", function(req,res) {
-  //  console.log(req.url);
+   console.log(req.url.split('/play'));
    res.sendFile(__dirname + '/index.html');
  });
 
 io.on('connection', function(socket){
-    socket.join("gameRoom");
     // console.log('client connected (id: ' + socket.id +' )');
     socket.on('disconnect', function(){
       // console.log('client disconnected (id: ' + socket.id +' )');
     });
 
+    socket.on('joinGame', function(msg) {
+      socket.gameid = msg.gameid;
+      socket.join(msg.gameid);
+      console.log( io.nsps['/'].adapter.rooms[msg.gameid] );
+    });
+
+    // TODO: ready mechanism?
     socket.on('startGame', function(){
-      console.log("Received request to start a game cycle");
-      game = new captionGame(socket);
-      game.startGame();
+      console.log("Received request from " + socket.id + " to start a game cycle");
+      game = new captionGame(socket.gameid);
+      game.startGame(socket.gameid);
     })
     socket.on('sendSentence', function(msg) {
 //      console.log("Message from " + socket.id);
@@ -70,19 +76,22 @@ var imageDB = [
   "CWlEICI.jpg",
   "5Hh7Yqz.jpg"
 ];
-captionGame = function(sock) {
+captionGame = function(gameid) {
     return {
       numRounds: 3,
       roundDuration: [roundtime,roundtime,roundtime],
       currentRound : 0,
-      socket: sock,
+      gameid: gameid,
       image: "/static/"+imageDB[ Math.floor( imageDB.length*Math.random() ) ],
+      players: io.nsps['/'].adapter.rooms[gameid].sockets, // list of players in this room
 
       startGame : function () {
-        console.log("Starting game!");
-        io.emit('gameStart');
+        console.log("Starting game with gameid ",this.gameid);
+        console.log("The player list is ",this.players);
+        io.to(this.gameid).emit('gameStart');
         var self = this;
         self.nextRound();
+
         //setTimeout(function() { self.nextRound() },self.roundDuration[0]);
       },
       nextRound : function () {
@@ -91,7 +100,7 @@ captionGame = function(sock) {
         } else {
           this.currentRound += 1;
           // console.log("Going to round " + this.currentRound);
-          io.emit('nextRound',{
+          io.to(this.gameid).emit('nextRound',{
             roundNumber: this.currentRound,
             expireTime: (new Date()).getTime() + this.roundDuration[this.currentRound-1],
             image: this.currentRound > 1 ? this.image : ""
@@ -102,7 +111,7 @@ captionGame = function(sock) {
       },
       endGame : function () {
         console.log("Game over!");
-        io.emit('gameEnd');
+        io.to(this.gameid).emit('gameEnd');
       }
     };
 };
