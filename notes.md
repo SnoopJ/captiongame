@@ -21,8 +21,9 @@
     * [x] populate word lists
     * [x] freebie scroll menu of some sort
       - push button, get scroll list
-    * [ ] populate image from socket event
-    * [ ] populate vote from socket event
+    * [x] enlarge image on sentence construction screen
+    * [x] populate image from socket event
+    * [ ] populate vote from socket event (☺)
     * [ ] show the results of the vote
     * [ ] send word choices with socket event
     * [ ] send sentence with socket event
@@ -33,11 +34,11 @@ example **incoming** and *outgoing* events in socket.io:
   * [x]**newRound**
     * [x] prescribed round end time
   * [ ] *sendWord*
+  * [ ] **wordTakenByPlayer**
   * [x] *sendSentence*
   * [ ] *sendVote*
   * [x] **invalidSentence** (☺)
-  * [ ] **wordTakenByPlayer**
-  * [ ] **sentenceReults** (☺)
+  * [ ] **sentenceResults** (☺)
   * [ ] **voteReults** (☺)
 
 ### back-end (James)
@@ -64,3 +65,4 @@ example **incoming** and *outgoing* events in socket.io:
 
 * d3.js integration of ...some kind bc prize?
 * pulling images from the webbernet
+* gif/gifv support
