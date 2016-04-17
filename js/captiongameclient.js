@@ -58,12 +58,17 @@ $(function() {
       console.log("freebie words:",freebies);
     }
   })
+  var playerWords = ["Fat","Ugly","Bad","Diabetic","Dumb"]
+  //var test = ;
+  //Populate the player wordbank
+  playerWords.forEach(function(e){
+    $("#playerWordBank").append($('<a style="width: 50%" class="btn btn-primary btn-lg" role="button">' + e + '</a>'));
+  })
 
   // extract button word
-  $("#imageRoundContainer").on('click','.btn',function() {
+  $('#imageRoundContainer').on('click', '.btn',function() {
     input = $("#userSentence");
     word = $(this).text();
-
     if ( input.val().indexOf(word) < 0 ) {
       // check if there's already a space with ternary
       hasSpace = input.val().length == 0 || input.val().substr(-1,1) == " ";
