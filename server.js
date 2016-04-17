@@ -8,9 +8,10 @@ app.set('port', port);
 server.listen(port);
 
 app.use('/static',express.static(__dirname))
-app.get("/", function(req,res) {
-  res.sendFile(__dirname + '/index.html');
-});
+app.use('/',express.static(__dirname))
+// app.get("/", function(req,res) {
+//   res.sendFile(__dirname + '/index.html');
+// });
 
 io.on('connection', function(socket){
     console.log('client connected (id: ' + socket.id +' )');
