@@ -146,7 +146,7 @@ captionGame = function(gameid) {
       roundDuration: [0,30000,20000],
       currentRound : 1,
       gameid: gameid,
-      image: "/static/"+imageDB[ Math.floor( imageDB.length*Math.random() ) ], // randomly chosen image from our DB
+      image: "/static/img/"+imageDB[ Math.floor( imageDB.length*Math.random() ) ], // randomly chosen image from our DB
       votes: [],
       sentences: [],
       //players: lazyClone(io.nsps['/'].adapter.rooms[gameid].sockets), // list of players in this room

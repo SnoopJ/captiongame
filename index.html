@@ -3,7 +3,7 @@
 	<link rel="icon" type="image/png" sizes="32x32" href="/static/img/favicon-32x32.png">
 	<link rel="icon" type="image/png" sizes="96x96" href="/static/img/favicon-96x96.png">
 	<link rel="icon" type="image/png" sizes="16x16" href="/static/img/favicon-16x16.png">
-	
+
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 	<script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
 	<script src="https://code.jquery.com/jquery-2.2.3.min.js"></script>
@@ -15,7 +15,7 @@
 	.timer {
 		color: #fff;
 		background-color: #337ab7;
-		border-color: #2e6da4;
+		border: 1px solid #2C6596;
 		height: 40px;
 		padding: 0px;
 		display: inline-block;
@@ -89,7 +89,7 @@
 					<input class="form-control center-block" id="userSentence"></input>
 				</div>
 				<div class="row">
-					<button class="form-control center-block" id="submitSentence">Submit</button>
+					<button class="form-control center-block" style="background-color: #ccc; border-color: #888;" id="submitSentence">Submit</button>
 				</div>
 			</div>
 			<div class="row">
@@ -141,7 +141,7 @@
 				<h1 class="text-center">Welcome to CaptionGame!</h1>
 			</div>
 			<div class="row">
-				<img src="/static/Logo.png" style="min-width:10%; max-width:150px; margin-bottom: 30px; margin-top: 30px" class = "img-responsive center-block">
+				<img src="/static/img/Logo.png" style="min-width:10%; max-width:150px; margin-bottom: 30px; margin-top: 30px" class = "img-responsive center-block">
 			</div>
 			<div class="row">
 				<h2 class="text-center">Players ready: <span id="playersReady">0/1</span></h2>
