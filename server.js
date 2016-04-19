@@ -5,9 +5,16 @@ var io = require('socket.io')(server);
 var port = process.env.PORT || 80;
 
 var fs = require('fs');
+var glob = require('glob');
 var freebies = [];
 var games = {};
 var sendPlayersReady;
+
+var imageDB=[];
+glob("img/imageDB/@(*.jpg|*.png|*.gif)",null,function(er,files) {
+  imageDB = files;
+  console.log(imageDB);
+});
 
 fs.readFile('freebies.json', 'utf8', function (err, data) {
   if (err) throw err;
@@ -121,19 +128,6 @@ io.on('connection', function(socket){
 lazyClone = function(obj) {
   return JSON.parse(JSON.stringify(obj));
 }
-var imageDB = [
-  "Doge_Image.jpg",
-  "rarepepe.png",
-  "CWlEICI.jpg",
-  "VjFr1P4.jpg",
-  "people-q-c-640-480-2.jpg",
-  "business-q-c-640-480-10.jpg",
-  "mbfl9fC.jpg",
-  "RsNtSyo.jpg",
-  "desktop-hd-funny-dog-pics-with-sayings.jpg",
-  "awg5Ccr.png",
-  "4tQN7x7.jpg"
-];
 captionGame = function(gameid) {
     return {
       running: false,
@@ -141,7 +135,7 @@ captionGame = function(gameid) {
       roundDuration: [0,30000,20000],
       currentRound : 1,
       gameid: gameid,
-      image: "/static/img/"+imageDB[ Math.floor( imageDB.length*Math.random() ) ], // randomly chosen image from our DB
+      image: "/static/"+imageDB[ Math.floor( imageDB.length*Math.random() ) ], // randomly chosen image from our DB
       playervotes: [],
       sentences: [],
       //players: lazyClone(io.nsps['/'].adapter.rooms[gameid].sockets), // list of players in this room

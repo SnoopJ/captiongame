@@ -5,10 +5,16 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/SnoopJeDi/captiongame/"
+    }
+  },
+  "author": "Sean Wu and James Gerity",
   "license": "MIT",
   "dependencies": {
     "express": "latest",
-    "socket.io": "latest"
+    "socket.io": "latest",
+    "glob": "latest"
   }
 }
