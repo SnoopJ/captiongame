@@ -168,7 +168,8 @@ captionGame = function(gameid) {
           }
           io.to(this.gameid).emit('nextRound',{
             roundNumber: this.currentRound,
-            expireTime: (new Date()).getTime() + this.roundDuration[this.currentRound-1],
+            roundDuration: this.roundDuration[this.currentRound-1],
+            startTime: (new Date()).getTime(),
             image: this.currentRound > 1 ? this.image : "",
             votingPool: this.votingPool
           });

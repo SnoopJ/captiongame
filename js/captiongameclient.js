@@ -82,7 +82,8 @@ function showRound(id) {
 
 function startRound(roundInfo) {
   roundNumber = roundInfo.roundNumber;
-  expireTime = roundInfo.expireTime;
+  roundDuration = roundInfo.roundDuration;
+  startTime = roundInfo.startTime;
   if (roundInfo.image != "") {
     $(".roundImage").attr("src",roundInfo.image);
   }
@@ -95,8 +96,8 @@ function startRound(roundInfo) {
   }
   showRound(roundids[roundNumber-1]);
   now = (new Date()).getTime()
-  dt = expireTime>now ? expireTime - now : 0;
-  startTimer(dt);
+  dt = startTime<now ? now - startTime : 0;
+  startTimer(roundDuration-dt);
 }
 
 var freebies;
