@@ -45,7 +45,7 @@ socket.on('gameEnd', function(data) {
   showRound("winner");
   console.log("Game over!")
   setTimeout(function() {
-    window.location.replace("/play/HackDFW2016");
+    window.location.reload();
     // $(".roundContainer").fadeOut({
     //   duration:3000,
     //   complete: function() { $(".roundContainer").hide(); $("#newGameContainer").fadeIn({duration:1500}) }
