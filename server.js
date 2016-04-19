@@ -1,25 +1,60 @@
 var express = require('express');
 var app = express();
-var server = require('http').Server(app);
+var http = require('http');
+var request = require('request');
+var server = http.Server(app);
 var io = require('socket.io')(server);
 var port = process.env.PORT || 80;
 
 var fs = require('fs');
 var glob = require('glob');
-var freebies = [];
 var games = {};
 var sendPlayersReady;
 
 var imageDB=[];
 glob("img/imageDB/@(*.jpg|*.png|*.gif)",null,function(er,files) {
-  imageDB = files;
-  console.log(imageDB);
+  files.forEach( function(e,i,a) {
+    console.log('/static/'+e);
+    a[i] = "/static/" + e; }
+  );
+  imageDB = imageDB.concat(files);
 });
 
-fs.readFile('freebies.json', 'utf8', function (err, data) {
-  if (err) throw err;
-  freebies = JSON.parse(data).freebieWords;
-});
+try {
+  imgurapikey = fs.readFileSync('imgurapikey', 'utf8');
+} catch (e) {
+  if( e.code === 'ENOENT' ){
+    console.error("Cannot read API key from imgurapikey file, skipping imgur...");
+  } else {
+    throw e;
+  }
+}
+
+if (typeof(imgurapikey) != "undefined") {
+  request({
+    headers: {
+      Authorization: "Client-ID " + imgurapikey
+    },
+    url: "https://api.imgur.com/3/gallery/t/cute/viral"
+
+  },function (err,res,body) {
+    if (res.statusCode == 200) {
+      var imgs = JSON.parse(body).data.items;
+      imgs = imgs.filter( function(img) {
+        return typeof(img.gifv)=="undefined" && img.is_album == false;
+      });
+      imgs.forEach (function(e,i,a) { imageDB = imageDB.concat(e.link); })
+    } else {
+      console.error("Something went wrong trying to talk to imgur:\n" + res.statusMessage);
+    }
+
+    if (imageDB.length <= 0) {
+      console.error("No images to serve, quitting...");
+      process.exit(1);
+    }
+  });
+}
+
 
 app.set('port', port);
 server.listen(port);
@@ -135,7 +170,7 @@ captionGame = function(gameid) {
       roundDuration: [0,30000,20000],
       currentRound : 1,
       gameid: gameid,
-      image: "/static/"+imageDB[ Math.floor( imageDB.length*Math.random() ) ], // randomly chosen image from our DB
+      image: imageDB[ Math.floor( imageDB.length*Math.random() ) ], // randomly chosen image from our DB
       playervotes: [],
       sentences: [],
       //players: lazyClone(io.nsps['/'].adapter.rooms[gameid].sockets), // list of players in this room
@@ -210,7 +245,7 @@ captionGame = function(gameid) {
         this.numRounds= 3;
         this.currentRound = 0;
         this.gameid= gameid;
-        this.image= "/static/"+imageDB[ Math.floor( imageDB.length*Math.random() ) ]; // randomly chosen image from our DB
+        this.image= imageDB[ Math.floor( imageDB.length*Math.random() ) ]; // randomly chosen image from our DB
         this.sentences= {};
         //players: lazyClone(io.nsps['/'].adapter.rooms[gameid].sockets), // list of players in this room
         this.players= {};
