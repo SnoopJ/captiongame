@@ -38,14 +38,14 @@ if (typeof(imgurapikey) != "undefined") {
     url: "https://api.imgur.com/3/gallery/t/cute/viral"
 
   },function (err,res,body) {
-    if (res.statusCode == 200) {
+    if (res === undefined || res.statusCode != 200) {
+      console.error("Something went wrong trying to talk to imgur:\n" + res.statusMessage);
+    } else {
       var imgs = JSON.parse(body).data.items;
       imgs = imgs.filter( function(img) {
         return typeof(img.gifv)=="undefined" && img.is_album == false;
       });
       imgs.forEach (function(e,i,a) { imageDB = imageDB.concat(e.link); })
-    } else {
-      console.error("Something went wrong trying to talk to imgur:\n" + res.statusMessage);
     }
 
     if (imageDB.length <= 0) {
