@@ -18,7 +18,7 @@ app.set('port', port);
 server.listen(port);
 
 app.use('/static/',express.static(__dirname))
-//app.use('/',express.static(__dirname))
+app.use('/$',function(req,res) { res.redirect("/play/defaultGame") });
 app.get("/play*", function(req,res) {
    res.sendFile(__dirname + '/index.html');
  });
