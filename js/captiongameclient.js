@@ -88,8 +88,8 @@ function startRound(roundInfo) {
     $(".roundImage").attr("src",roundInfo.image);
   }
   if (roundInfo.votingPool.length > 0) {
-    roundInfo.votingPool.forEach(function(e,i,a){
-      if ( e == null ) { return }
+      roundInfo.votingPool.forEach(function(e,i,a){
+      if ( e == null ) { return } // Lazy fix for null sentences
       $("#userGeneratedSentences")
         .append($('<a class="center-block btn btn-primary btn-md" data-votenumber='+ (i+1) + ' role="button">' + e + '</a>'));
     })

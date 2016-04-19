@@ -72,9 +72,11 @@ io.on('connection', function(socket){
      }
     socket.on('playerReady', function(msg) {
       if (!games[msg.gameid].running) { // if the game isn't already going
-        console.log("Socket " + socket.id + " has playerName " + msg.playerName );
         // console.log( io.nsps['/'].adapter.rooms[msg.gameid] );
-        games[msg.gameid].players[socket.id] = msg.playerName;
+        if (msg.playerName.length > 0) {
+          console.log("Socket " + socket.id + " has playerName " + msg.playerName );
+          games[msg.gameid].players[socket.id] = msg.playerName;
+        }
         games[msg.gameid].playersReady[socket.id] = true;
         sendPlayersReady(msg.gameid);
       }
