@@ -47,6 +47,7 @@ io.on('connection', function(socket){
         games[gameid] = game;
       }
       games[gameid].players[socket.id] = "Enigma"; // Default username until a player readies up
+      games[gameid].playervotes[socket.id] = -1;
       console.log(Object.keys(games[gameid].players));
       sendPlayersReady(gameid);
     });
@@ -85,36 +86,28 @@ io.on('connection', function(socket){
     // });
     socket.on('voteSentence', function(msg){
       if (typeof(games[msg.gameid]) == "undefined" ) {
-        console.error("Unknown game")
+        console.error("Unknown game");
+      }
+      if ( typeof(sentence) == "undefined" ) {
+        console.error("Unknown sentence");
       }
 
-//      games[msg.gameid].votes[msg.voteFor] = typeof(games[msg.gameid].votes[msg.voteFor]) == "undefined" ? 1 : games[msg.gameid].votes[msg.voteFor] + 1;
-      games[msg.gameid].sentences[msg.voteFor-1].votes += 1;
+      prevVote = games[msg.gameid].playervotes[socket.id];
+      if ( prevVote >0 ) {
+        console.log("Previous vote for "+prevVote+" decrementing");
+        games[msg.gameid].sentences[prevVote-1].votes -= 1;
+      }
+      if ( msg.voteFor > 0 && msg.voteFor <= games[msg.gameid].sentences.length ) {
+        games[msg.gameid].sentences[msg.voteFor-1].votes += 1;
+      } else {
+        console.error("Invalid vote");
+      }
+      games[msg.gameid].playervotes[socket.id] = msg.voteFor;
       console.log("Vote for ",msg.voteFor, games[msg.gameid].sentences );
     });
     socket.on('sendSentence', function(msg) {
-      //console.log("Message from " + socket.id);
-      // TODO: not hard-coded, but seeded from the word draft round
-      playerWords = [
-        "cupcake",
-        "doge",
-        "sweet",
-        "diabetic",
-        "fat",
-        "yellow",
-        "dumb"
-      ];
       words = msg.sentence.split(' ').filter(function(s) { return s!=""; });
-      // badwords = words.filter(function(s){
-      //   return freebies.concat(playerWords).indexOf(s.toLowerCase())<0;
-      // });
-      // if (badwords.length>0 || words.length == badwords.length) {
-      //   socket.emit('invalidSentence',{
-      //     sentence: msg.sentence,
-      //     invalidWords: badwords,
-      //     empty: (words.length == 0)
-      //   });
-      // }
+
       if (words.length>0) {
         socket.emit('sentenceAccepted');
         games[msg.gameid].sentences = [].concat(games[msg.gameid].sentences,{sender:socket.id, sentence:msg.sentence, votes:0});
@@ -147,7 +140,7 @@ captionGame = function(gameid) {
       currentRound : 1,
       gameid: gameid,
       image: "/static/img/"+imageDB[ Math.floor( imageDB.length*Math.random() ) ], // randomly chosen image from our DB
-      votes: [],
+      playervotes: [],
       sentences: [],
       //players: lazyClone(io.nsps['/'].adapter.rooms[gameid].sockets), // list of players in this room
       players: {},
@@ -170,7 +163,6 @@ captionGame = function(gameid) {
           this.endGame();
         } else {
           this.currentRound += 1;
-          // console.log("Going to round " + this.currentRound);
           if(this.sentences.length>0){
             this.sentences.forEach( function(e,i,a) { this.votingPool = this.votingPool.concat(e.sentence); console.log(this.votingPool) }, this );
           }
@@ -186,7 +178,6 @@ captionGame = function(gameid) {
       },
       endGame : function () {
         console.log("Game over!");
-        console.log(this.votes);
         winner = "Nobody!";
         sentence = "I have no mouth, and I must scream";
         maxvotes = 0;
@@ -214,26 +205,6 @@ captionGame = function(gameid) {
             break;
           }
         }
-        console.log(win);
-
-        // Object.keys(this.sentences).forEach( function(e,i,a) { this.results[i] = 0; }, this);
-        // for ( prop in this.votes ) {
-        //   console.log(prop);
-        //   console.log(this.votes[prop]);
-        //   console.log(this.results[this.votes[prop]]);
-        //   if ( this.votes.hasOwnProperty(prop) ) {
-        //     this.results[this.votes[prop]] += 1;
-        //     if (this.results[this.votes[prop]] > maxvotes) {
-        //       console.log(this.votes[prop] +" has overtaken the previous max");
-        //       maxvotes = this.results[this.votes[prop]];
-        //       winner = this.players[prop];
-        //       sentence = this.sentences[prop];
-        //     } else if (this.results[this.votes[prop]] == maxvotes ) {
-        //       winner = "A tie!"
-        //       sentence = [].concat(sentence,this.sentences[prop]);
-        //     }
-        //   }
-        // }
 
         io.to(this.gameid).emit('gameEnd',{winner: winner, sentence: sentence});
 
@@ -243,7 +214,6 @@ captionGame = function(gameid) {
         this.currentRound = 0;
         this.gameid= gameid;
         this.image= "/static/"+imageDB[ Math.floor( imageDB.length*Math.random() ) ]; // randomly chosen image from our DB
-        this.votes= {};
         this.sentences= {};
         //players: lazyClone(io.nsps['/'].adapter.rooms[gameid].sockets), // list of players in this room
         this.players= {};
