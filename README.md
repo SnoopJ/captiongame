@@ -16,3 +16,5 @@ Provided with a set of images and some friends within a WebSocket's reach, you t
 `npm install`  
 `node server.js`  
 Browse to the web server running on localhost && [hold onto your butts](http://butt.holdings)
+
+If you'd like to open a specific instance of the game, browser to /play/GameID, and only players accessing this URL will be in your game!
