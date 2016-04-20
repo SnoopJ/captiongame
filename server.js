@@ -21,7 +21,7 @@ glob("img/imageDB/@(*.jpg|*.png|*.gif)",null,function(er,files) {
 });
 
 try {
-  imgurapikey = fs.readFileSync('imgurapikey', 'utf8');
+  imgurapikey = fs.readFileSync('imgurapikey', 'utf8').trim();
 } catch (e) {
   if( e.code === 'ENOENT' ){
     console.error("Cannot read API key from imgurapikey file, skipping imgur...");
@@ -39,7 +39,8 @@ if (typeof(imgurapikey) != "undefined") {
 
   },function (err,res,body) {
     if (res === undefined || res.statusCode != 200) {
-      console.error("Something went wrong trying to talk to imgur:\n" + res.statusMessage);
+      console.error("Something went wrong trying to talk to imgur");
+      console.error("Response is: "+ res);
     } else {
       var imgs = JSON.parse(body).data.items;
       imgs = imgs.filter( function(img) {
